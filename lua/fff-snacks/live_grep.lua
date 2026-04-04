@@ -51,7 +51,17 @@ M.source = {
     local items = {}
     for idx, fff_item in ipairs(grep_result.items) do
       assert(fff_item.line_number, "Expected line_number in grep result item")
-      local pos = { fff_item.line_number, fff_item.match_ranges[1][1] }
+      fff_item.match_ranges = fff_item.match_ranges or {}
+
+      local pos
+      local end_pos
+      if #fff_item.match_ranges == 0 then
+        pos = { fff_item.line_number, 0 }
+        end_pos = nil
+      else
+        pos = { fff_item.line_number, fff_item.match_ranges[1][1] }
+        end_pos = { fff_item.line_number, fff_item.match_ranges[1][2] }
+      end
 
       local positions = {}
       for _, range in ipairs(fff_item.match_ranges) do
@@ -68,7 +78,7 @@ M.source = {
         line = fff_item.line_content,
 
         pos = pos,
-        end_pos = { fff_item.line_number, fff_item.match_ranges[1][2] },
+        end_pos = end_pos,
         positions = positions,
 
         score = fff_item.total_frecency_score,
