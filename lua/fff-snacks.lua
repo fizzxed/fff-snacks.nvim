@@ -1,23 +1,25 @@
 ---@module 'snacks'
 
+---@module 'fff_snacks'
+
 ---@class snacks.picker.sources.Config
 ---@field fff snacks.picker.Config
----@field fff_live_grep FFFSnacksGrepConfig
+---@field fff_live_grep fff_snacks.GrepConfig
 
 ---@class snacks.picker
 ---@field fff fun(opts?: snacks.picker.Config): snacks.Picker
----@field fff_live_grep fun(opts?: FFFSnacksGrepConfig): snacks.Picker
+---@field fff_live_grep fun(opts?: fff_snacks.GrepConfig): snacks.Picker
 
----@alias FFFGrepMode "plain" | "regex" | "fuzzy"
+---@alias fff_snacks.GrepMode "plain" | "regex" | "fuzzy"
 
----@class FFFSnacksGrepConfig: snacks.picker.Config
----@field grep_mode? FFFGrepMode[]
+---@class fff_snacks.GrepConfig: snacks.picker.Config
+---@field grep_mode? fff_snacks.GrepMode[]
 ---@field _is_grep_mode_plain? boolean
 ---@field _is_grep_mode_regex? boolean
 ---@field _is_grep_mode_fuzzy? boolean
 
----@class FFFSnacksGrepPicker: snacks.Picker
----@field opts FFFSnacksGrepConfig
+---@class fff_snacks.GrepPicker: snacks.Picker
+---@field opts fff_snacks.GrepConfig
 
 return {
   sources = {
@@ -28,16 +30,16 @@ return {
   find_files = function(opts)
     Snacks.picker.fff(opts)
   end,
-  ---@param opts? FFFSnacksGrepConfig
+  ---@param opts? fff_snacks.GrepConfig
   live_grep = function(opts)
     Snacks.picker.fff_live_grep(opts)
   end,
-  ---@param opts? FFFSnacksGrepConfig
+  ---@param opts? fff_snacks.GrepConfig
   grep_word = function(opts)
-    opts = opts or {}
-    opts.search = function(picker)
-      return picker:word()
-    end
-    Snacks.picker.fff_live_grep(opts)
+    Snacks.picker.fff_live_grep(vim.tbl_deep_extend("force", opts or {}, {
+      search = function(picker)
+        return picker:word()
+      end,
+    }))
   end,
 }

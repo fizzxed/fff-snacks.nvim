@@ -5,13 +5,13 @@ local M = {}
 local conf = require "fff.conf"
 local file_picker = require "fff.file_picker"
 
----@type FFFSnacksGrepConfig
+---@type fff_snacks.GrepConfig
 M.source = {
   title = "FFF Live Grep",
   format = "file",
   live = true,
 
-  ---@param opts FFFSnacksGrepConfig
+  ---@param opts fff_snacks.GrepConfig
   finder = function(opts, ctx)
     -- fff.picker_ui: initialize_picker
     if not file_picker.is_initialized() then
@@ -21,8 +21,10 @@ M.source = {
       end
     end
 
+    opts = vim.deepcopy(opts) or {}
+
     local config = conf.get()
-    local merged_config = vim.tbl_deep_extend("force", config or {}, opts or {})
+    local merged_config = vim.tbl_deep_extend("force", config or {}, opts)
     if not merged_config then
       return {}
     end
@@ -98,7 +100,7 @@ M.source = {
     _is_grep_mode_fuzzy = { icon = "fuzzy", value = true },
   },
 
-  ---@param picker FFFSnacksGrepPicker
+  ---@param picker fff_snacks.GrepPicker
   on_show = function(picker)
     local modes = picker.opts.grep_mode or { "plain", "regex", "fuzzy" }
     picker.opts._is_grep_mode_plain = modes[1] == "plain"
@@ -107,7 +109,7 @@ M.source = {
   end,
 
   actions = {
-    ---@param picker FFFSnacksGrepPicker
+    ---@param picker fff_snacks.GrepPicker
     cycle_grep_mode = function(picker)
       local modes = picker.opts.grep_mode or { "plain", "regex", "fuzzy" }
       -- move the first mode to the end of the list
