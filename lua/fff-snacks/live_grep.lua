@@ -45,7 +45,7 @@ M.source = {
       ctx.filter.search,
       0,
       opts.limit or merged_config.max_results,
-      merged_config.grep_config,
+      merged_config.grep,
       opts.grep_mode[1] or "plain"
     )
 
