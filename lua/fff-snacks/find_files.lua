@@ -96,14 +96,21 @@ M.source = {
       nil
     )
 
+    -- We deliberately don't set `item.score`: snacks' finder unconditionally
+    -- overwrites it to DEFAULT_SCORE on add (snacks/picker/core/finder.lua),
+    -- so anything set here is wiped before the matcher sees it. fff.nvim's
+    -- ranking is preserved via insertion order (idx), which snacks' default
+    -- sort uses as a tiebreaker.
     ---@type snacks.picker.finder.Item[]
     local items = {}
     for _, fff_item in ipairs(fff_result) do
       ---@type snacks.picker.finder.Item
       local item = {
-        text = fff_item.name,
+        -- `text` is the full relative path (not just the filename), matching
+        -- snacks' native `files` source convention. This lets `<C-g>`
+        -- refinement fuzzy-match against any part of the path.
+        text = fff_item.relative_path,
         file = fff_item.relative_path,
-        score = fff_item.total_frecency_score,
         -- HACK: in original snacks implementation status is a string of
         -- `git status --porcelain` output
         status = status_map[fff_item.git_status] and {
@@ -146,6 +153,9 @@ M.source = {
     },
   },
   live = true,
+  -- Enables `<C-g>` to toggle out of live mode and let snacks' matcher refine
+  -- the current result set without re-querying fff.nvim.
+  supports_live = true,
 }
 
 return M

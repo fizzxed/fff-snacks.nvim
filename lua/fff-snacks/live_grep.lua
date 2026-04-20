@@ -10,6 +10,7 @@ M.source = {
   title = "FFF Live Grep",
   format = "file",
   live = true,
+  supports_live = true,
 
   ---@param opts fff_snacks.GrepConfig
   finder = function(opts, ctx)
@@ -72,6 +73,12 @@ M.source = {
         end
       end
 
+      -- We deliberately don't set `item.score`: snacks' finder unconditionally
+      -- overwrites it to DEFAULT_SCORE on add (snacks/picker/core/finder.lua),
+      -- so anything set here is wiped before the matcher sees it. fff.nvim's
+      -- ranking is preserved via insertion order (idx), which snacks' default
+      -- sort uses as a tiebreaker. For refinement-time bias (non-live after
+      -- <C-g>), `score_add`/`score_mul` are the surviving hooks.
       ---@type snacks.picker.finder.Item
       local item = {
         idx = idx,
@@ -83,7 +90,6 @@ M.source = {
         end_pos = end_pos,
         positions = positions,
 
-        score = fff_item.total_frecency_score,
         text = ("%s:%d:%d:%s"):format(fff_item.relative_path, pos[1], pos[2], fff_item.line_content),
       }
 
