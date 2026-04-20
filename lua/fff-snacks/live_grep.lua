@@ -30,7 +30,7 @@ M.source = {
       return {}
     end
 
-    local base_path = opts.cwd or vim.uv.cwd()
+    local base_path = config.base_path
     if not base_path then
       return {}
     end
